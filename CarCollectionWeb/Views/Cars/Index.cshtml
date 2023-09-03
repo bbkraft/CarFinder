@@ -1,0 +1,164 @@
+﻿@model CarCollectionWeb.Models.ViewModel.CarsViewModel
+
+
+@{
+    ViewData["Title"] = "Cars";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Прокачай свою тачку, чувак</h1>
+</div>
+
+<div>
+    <a class="btn btn-primary" href="@Url.Action("AddOrEdit", "Cars")">Add Car</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>
+                <label class="column-label" for="CarBrand">Car Brand:</label>
+                <div class="dropdown-wrapper">
+                    <select id="carBrandSelect" name="CarBrand">
+                        <option value="">All</option>
+                        @foreach (var category in Model.BrandsDictionary)
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    </select>
+                </div>
+            </th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Engine Сapacity</th>
+            <th>Fuel Type</th>
+            <th>Name Category</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody id="carTableBody">
+    </tbody>
+</table>
+
+<div id="pagination">
+    <ul class="pagination"></ul>
+</div>
+
+<div id="container">
+    <div>
+        <p>
+            Размер страницы:
+            <select id="pageSizeSelect">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+            </select>
+        </p>
+    </div>
+
+    <div id="totalObject">
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            search(1, 3);
+            $('#pageSizeSelect').change(function () {
+                var pageSize = $(this).val();
+                search(1, pageSize);
+                console.log(pageSize)
+            });
+            $('#carBrandSelect').change(function () {
+                search(1, 3);
+                console.log($(this).val())
+            });
+        });
+
+        function search(page, pageSize) {
+
+            var carBrand = $('#carBrandSelect').val();
+
+            $.ajax({
+                method: "GET",
+                url: '@Url.Action("FilterByCarBrand", "Cars")',
+                data: { carBrand: carBrand, page: page, pageSize: pageSize }
+            })
+                .done(function (result) {
+                    console.log(result)
+
+                    var carTableBody = $("#carTableBody");
+                    carTableBody.empty();
+
+                    $.each(result.cars, function (index, car) {
+                        var row = $("<tr>");
+                        row.append($("<td>").text(car.id));
+                        row.append($("<td>").text(car.carBrand));
+                        row.append($("<td>").text(car.carModel));
+                        row.append($("<td>").text(car.year));
+                        row.append($("<td>").text(car.engineСapacity));
+                        row.append($("<td>").text(getFuelType(car.fuelType)));
+                        row.append($("<td>").text(car.carCategoryViewModel.nameCategory));
+                        row.append($("<td>").html('<a href="Cars/AddOrEdit/' + car.id + '">Edit</a>'));
+                        row.append($("<td>").html('<a class="btn btn-danger" href="Cars/Delete/' + car.id + '">Delete</a>'));
+
+                        carTableBody.append(row);
+                    });
+
+                    function getFuelType(fuelType) {
+                        switch (fuelType) {
+                            case 0:
+                                return "Petrol";
+                            case 1:
+                                return "Diesel";
+                            case 2:
+                                return "Gasoline";
+                            default:
+                                return "";
+                        }
+                    };
+
+                    var currentPage = result.pageInfo.pageNumber;
+                    var totalPages = result.pageInfo.totalPages;
+                    var range = 5;
+
+                    var pagin = $("#pagination .pagination");
+                    pagin.empty();
+                    // Кнопка Назад
+                    if (currentPage > 1) {
+                        var prevPage = $('<li><a href="#" data-page="' + (currentPage - 1) + '">Previous</a></li>');
+                        pagin.append(prevPage);
+                    }
+
+                    // Дипазон страниц нах
+                    var startPage = Math.max(1, currentPage - Math.floor(range / 2));
+                    var endPage = Math.min(totalPages, startPage + range - 1);
+                    startPage = Math.max(1, endPage - range + 1);
+
+                    // кнопки страниц в заданном диапазоне
+                    for (var i = startPage; i <= endPage; i++) {
+                        var pageLink = $('<li><a href="#" data-page="' + i + '">' + i + '</a></li>');
+                        pagin.append(pageLink);
+                    }
+
+                    // Кнопка Вперед
+                    if (currentPage < totalPages) {
+                        var nextPage = $('<li><a href="#" data-page="' + (currentPage + 1) + '">Next</a></li>');
+                        pagin.append(nextPage);
+                    }
+
+                    pagin.find('li a').click(function () {
+                        var page = $(this).data('page');
+                        search(page, pageSize);
+                    });
+
+                    var totalObject = $("#totalObject");
+                    var obj = result.pageInfo.totalItems;
+                    totalObject.empty();
+                    totalObject.append('<p>Общее количество машин: ' + obj + '</p>');
+                });
+        }
+    </script>
+}
+

@@ -1,0 +1,52 @@
+﻿@using CarCollectionWeb.Models.Domain
+@model CarCollectionWeb.Models.ViewModel.CarViewModel
+@{
+
+}
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добавь лохнявую тачку, чувааак</h1>
+</div>
+
+<form method="post" action="AddOrEdit" class="mt-5">
+    <div class="mb-3">
+        <label asp-for="CarCategoryId">Car Category</label>
+        <select asp-for="CarCategoryId" class="form-control">
+            <option value="">Select Categry</option>
+            @foreach (var category in Model.CarCategoriesName)
+            {
+                <option value="@category.Id">@category.NameCategory</option>
+            }
+        </select>
+         <span asp-validation-for="CarCategoryId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CarBrand"></label>
+        <input asp-for="CarBrand" class="form-control" type="text">
+        <span asp-validation-for="CarBrand" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Model Name</label>
+        <input type="text" class="form-control" asp-for="CarModel">
+        <span asp-validation-for="CarModel" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Year Of Issue</label>
+        <input type="number" class="form-control" asp-for="Year">
+         <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Engine Сapacity</label>
+        <input type="number" class="form-control" asp-for="EngineСapacity">
+         <span asp-validation-for="EngineСapacity" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="FuelType"></label>
+        <select asp-for="FuelType" asp-items="@Html.GetEnumSelectList<FuelTypeEnum>()" class="form-control"></select>
+             <span asp-validation-for="FuelType" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>

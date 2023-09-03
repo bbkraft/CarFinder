@@ -1,0 +1,48 @@
+﻿@using CarCollectionWeb.Models.Domain;
+@model CarCollectionWeb.Models.ViewModel.CarViewModel
+}
+<h1>Edit Car</h1>
+
+
+<form method="post" action="AddOrEdit" class="mt-5">
+    
+    <div class="mb-3">
+        <label for="" class="form-label">Id</label>
+        <input type="text" class="form-control" asp-for="Id" readonly>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CarCategoryId">Car Category</label>
+        <select asp-for="CarCategoryId" class="form-control">
+            <option value="">Select Categry</option>
+            @foreach (var category in Model.CarCategoriesName)
+            {
+                <option value="@category.Id">@category.NameCategory</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Brand Name</label>
+        <input type="text" class="form-control" asp-for="CarBrand">
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Model Name</label>
+        <input type="text" class="form-control" asp-for="CarModel">
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Year Of Issue</label>
+        <input type="text" class="form-control" asp-for="Year">
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Engine Сapacity</label>
+        <input type="number" class="form-control" asp-for="EngineСapacity">
+    </div>
+    <div class="mb-3">
+        <label asp-for="FuelType"></label>
+        <select asp-for="FuelType" asp-items="@Html.GetEnumSelectList<FuelTypeEnum>()" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" asp-action="AddOrEdit" asp-controller="Cars">Edit</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index", "Cars")">Return</a>
+  
+    </button>
+</form>
